@@ -3,6 +3,7 @@ require("dotenv").config() //load .env files into process.rnv by default
 const express = require("express")
 const cors = require("cors")
 const router = require("./routing/router") // import route
+require('./database/connection')
 
 // create server
 const bookstoreServer = express()
