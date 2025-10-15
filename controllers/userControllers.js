@@ -39,13 +39,41 @@ exports.loginController = async (req, res) => {
         const existingUser = await users.findOne({ email })
         if (existingUser) {
             if (existingUser.password == password) {
-                const token = jwt.sign({userEmail:existingUser.email},process.env.JWTSECRET)
-                res.status(200).json({ user:existingUser , token })
+                const token = jwt.sign({ userEmail: existingUser.email }, process.env.JWTSECRET)
+                res.status(200).json({ user: existingUser, token })
             } else {
                 res.status(401).json("invalid email / password")
             }
         } else {
             res.status(404).json("Invalid Credentials")
+        }
+
+    } catch (error) {
+        res.status(500).json(err)
+    }
+}
+// google login
+
+exports.googleLoginController = async (req, res) => {
+    console.log("Inside Google login API");
+    //console.log(req.body);
+    const { email, password, username, profile } = req.body
+    console.log(email, password, username, profile);
+
+    try {
+        const existingUser = await users.findOne({ email })
+        if (existingUser) {
+            // token
+            const token = jwt.sign({ userEmail: existingUser.email }, process.env.JWTSECRET)
+            res.status(200).json({ user: existingUser, token })
+        } else {
+            const newUser = new users({
+                username, email, password, profile
+            })
+            await newUser.save()
+            // token
+            const token = jwt.sign({ userEmail: newUser.email }, process.env.JWTSECRET)
+            res.status(200).json({ user: newUser, token })
         }
 
     } catch (error) {
