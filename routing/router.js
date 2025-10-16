@@ -1,15 +1,20 @@
 const express = require('express')
 const userController = require('../controllers/userControllers')
+const bookController = require("../controllers/bookController")
+const jwtMiddleware = require('../middlewares/jwtMiddleware')
 const router = express.Router()
 
 // register
-router.post('/register', userController.registerController )
+router.post('/register', userController.registerController)
 
 // login
-router.post('/login', userController.loginController )
+router.post('/login', userController.loginController)
 
 // Googlelogin
-router.post('/google-login', userController.googleLoginController )
+router.post('/google-login', userController.googleLoginController)
+
+// add book
+router.post("/add-book", jwtMiddleware, bookController.addBookController)
 
 module.exports = router
 
