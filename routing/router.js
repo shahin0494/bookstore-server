@@ -15,10 +15,15 @@ router.post('/login', userController.loginController)
 router.post('/google-login', userController.googleLoginController)
 
 // add book
-router.post("/add-book", multerConfig.array("uploadImg",3), jwtMiddleware, bookController.addBookController)
+router.post("/add-book", multerConfig.array("uploadImg", 3), jwtMiddleware, bookController.addBookController)
 
-// get home-book
-router.get("/home-books",bookController.getHomeBooks)
+// home-book
+router.get("/home-books", bookController.getHomeBooks)
+
+// all books
+router.get("/all-books", jwtMiddleware, bookController.getAllBooks)
+
+// view books
+router.get("/books/:id/view", jwtMiddleware, bookController.viewBookController)
 
 module.exports = router
-
