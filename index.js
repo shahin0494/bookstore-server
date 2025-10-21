@@ -10,12 +10,9 @@ const bookstoreServer = express()
 
 //enable cors protocol in server
 bookstoreServer.use(cors())
-
-// enable json parsing
-bookstoreServer.use(express.json())
-
-//enable router
-bookstoreServer.use(router)
+bookstoreServer.use(express.json()) // enable json parsing
+bookstoreServer.use(router) //enable router
+bookstoreServer.use("/uploads",express.static("./uploads"))
 
 // create port for our application
 const PORT = 3000
