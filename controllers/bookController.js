@@ -39,16 +39,21 @@ exports.getHomeBooks = async (req, res) => {
 // get all books
 exports.getAllBooks = async (req, res) => {
     console.log("inside get all home books");
+    const searchKey = req.query.search
     const email = req.payload
+    const query = {
+        title:{$regex : searchKey,$options:"i"},
+        userMail : {$ne:email}
+    }
     try {
-        const allBooks = await books.find({ userMail: {$ne:email} })
+        const allBooks = await books.find(query)
         res.status(200).json(allBooks)
     } catch (err) {
         res.status(500).json(err)
     }
 }
 
-// viewbook
+// view all book
 exports.viewBookController = async (req,res)=>{
     console.log("inside view book contoller");
     const {id} = req.params
