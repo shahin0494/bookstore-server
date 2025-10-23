@@ -42,8 +42,8 @@ exports.getAllBooks = async (req, res) => {
     const searchKey = req.query.search
     const email = req.payload
     const query = {
-        title:{$regex : searchKey,$options:"i"},
-        userMail : {$ne:email}
+        title: { $regex: searchKey, $options: "i" },
+        userMail: { $ne: email }
     }
     try {
         const allBooks = await books.find(query)
@@ -54,15 +54,53 @@ exports.getAllBooks = async (req, res) => {
 }
 
 // view all book
-exports.viewBookController = async (req,res)=>{
+exports.viewBookController = async (req, res) => {
     console.log("inside view book contoller");
-    const {id} = req.params
+    const { id } = req.params
     console.log(id);
     try {
-        const viewbook = await books.findById({_id:id})
+        const viewbook = await books.findById({ _id: id })
         res.status(200).json(viewbook)
     } catch (err) {
         res.status(500).json(err)
     }
-        
+
+}
+
+// grt all user books
+exports.getAllUserBooksController = async (req, res) => {
+    console.log("inside get all user books");
+    const email = req.payload
+    try {
+        const allUserBooks = await books.find({ userMail: email })
+        res.status(200).json(allUserBooks)
+    } catch (err) {
+        res.status(500).json(err)
+    }
+}
+
+// get all user bought books
+exports.getAllUserBoughtBooksController = async (req, res) => {
+    console.log("inside get all user bought books");
+    const email = req.payload
+    try {
+        const allUserBoughtBooks = await books.find({ bought: email })
+        res.status(200).json(allUserBoughtBooks)
+    } catch (err) {
+        res.status(500).json(err)
+    }
+}
+
+// removing user uploaded book
+exports.deleteUserBookController = async (req, res) => {
+    console.log("inside delete user book controller");
+    // get book id
+    const { id } = req.params
+    console.log(id);
+    try {
+        await books.findByIdAndDelete({ _id: id })
+        res.status(200).json("deletion successfull")
+    } catch (err) {
+        res.status(500).json(err)
+    }
 }
