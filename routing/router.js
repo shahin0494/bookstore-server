@@ -35,4 +35,7 @@ router.get("/user-bought-books",jwtMiddleware,bookController.getAllUserBoughtBoo
 // delete user books
 router.delete("/user-books/:id/remove",jwtMiddleware,bookController.deleteUserBookController)
 
+// user profile update
+router.put("/user-profile/edit",jwtMiddleware,multerConfig.single("profile"),userController.userProfileEditController)
+
 module.exports = router
