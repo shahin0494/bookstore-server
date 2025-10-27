@@ -1,6 +1,9 @@
 const users = require("../models/userModel")
 const jwt = require("jsonwebtoken")
 
+
+// ------------------- user -------------------------
+
 // register
 exports.registerController = async (req, res) => {
     console.log("Inside register API");
@@ -23,7 +26,7 @@ exports.registerController = async (req, res) => {
         }
 
     } catch (error) {
-        res.status(500).json(err)
+        res.status(500).json(error)
     }
 }
 
@@ -39,7 +42,7 @@ exports.loginController = async (req, res) => {
         const existingUser = await users.findOne({ email })
         if (existingUser) {
             if (existingUser.password == password) {
-                const token = jwt.sign({ userEmail: existingUser.email }, process.env.JWTSECRET)
+                const token = jwt.sign({ userEmail: existingUser.email ,role:existingUser.role }, process.env.JWTSECRET)
                 res.status(200).json({ user: existingUser, token })
             } else {
                 res.status(401).json("invalid email / password")
@@ -49,7 +52,7 @@ exports.loginController = async (req, res) => {
         }
 
     } catch (error) {
-        res.status(500).json(err)
+        res.status(500).json(error)
     }
 }
 // google login
@@ -64,7 +67,7 @@ exports.googleLoginController = async (req, res) => {
         const existingUser = await users.findOne({ email })
         if (existingUser) {
             // token
-            const token = jwt.sign({ userEmail: existingUser.email }, process.env.JWTSECRET)
+            const token = jwt.sign({ userEmail: existingUser.email ,role:existingUser.role }, process.env.JWTSECRET)
             res.status(200).json({ user: existingUser, token })
         } else {
             const newUser = new users({
@@ -77,7 +80,7 @@ exports.googleLoginController = async (req, res) => {
         }
 
     } catch (error) {
-        res.status(500).json(err)
+        res.status(500).json(error)
     }
 }
 
@@ -95,4 +98,20 @@ exports.userProfileEditController = async (req,res)=>{
     } catch (err) {
         res.status(500).json(err)
     }
+}
+
+
+// ------------------- admin -------------------------
+
+// get all users
+exports.getAllUsersController = async (req,res)=>{
+    console.log("inside alluserscontroller");
+    const email = req.payload
+    try {
+        const allUsers = await users.find({email:{$ne:email}})
+        res.status(200).json(allUsers)
+    } catch (err) {
+        res.status(500).json(err)
+    }
+
 }
