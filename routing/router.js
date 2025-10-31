@@ -5,6 +5,8 @@ const jobController = require("../controllers/jobController")
 const jwtMiddleware = require('../middlewares/jwtMiddleware')
 const multerConfig = require('../middlewares/imageMulter')
 const adminjwtMiddleware = require('../middlewares/adminJwtMiddleware')
+const pdfMulterConfig = require('../middlewares/pdfMulterMiddleware')
+const applicationController = require("../controllers/applicationController")
 const router = express.Router()
 
 // unauthorised USER
@@ -33,40 +35,45 @@ router.get("/all-books", jwtMiddleware, bookController.getAllBooks)
 router.get("/books/:id/view", jwtMiddleware, bookController.viewBookController)
 
 // get user book
-router.get("/user-books",jwtMiddleware,bookController.getAllUserBooksController)
+router.get("/user-books", jwtMiddleware, bookController.getAllUserBooksController)
 
 // get user bought book
-router.get("/user-bought-books",jwtMiddleware,bookController.getAllUserBoughtBooksController)
+router.get("/user-bought-books", jwtMiddleware, bookController.getAllUserBoughtBooksController)
 
 // delete user books
-router.delete("/user-books/:id/remove",jwtMiddleware,bookController.deleteUserBookController)
+router.delete("/user-books/:id/remove", jwtMiddleware, bookController.deleteUserBookController)
 
 // user profile update
-router.put("/user-profile/edit",jwtMiddleware,multerConfig.single("profile"),userController.userProfileEditController)
+router.put("/user-profile/edit", jwtMiddleware, multerConfig.single("profile"), userController.userProfileEditController)
 
 // get and  view all job 
-router.get("/all-job",jobController.getAllJobsController)
+router.get("/all-job", jobController.getAllJobsController)
+
+// add application / apply job
+router.post("/application/add", jwtMiddleware, pdfMulterConfig.single("resume"), applicationController.addApplicationController)
 
 // ---------- admin----------
 
 // get all users
-router.get("/all-user",adminjwtMiddleware,userController.getAllUsersController)
+router.get("/all-user", adminjwtMiddleware, userController.getAllUsersController)
 
 // get all books
-router.get('/admin-all-books',adminjwtMiddleware,bookController.getAllBookAdminController)
+router.get('/admin-all-books', adminjwtMiddleware, bookController.getAllBookAdminController)
 
 // approve book
-router.put('/admin/book/approve',adminjwtMiddleware,bookController.updateBookStatusController)
+router.put('/admin/book/approve', adminjwtMiddleware, bookController.updateBookStatusController)
 
 // admin profile update
-router.put("/admin-profile/edit",adminjwtMiddleware,multerConfig.single("profile"),userController.adminProfileEditController)
+router.put("/admin-profile/edit", adminjwtMiddleware, multerConfig.single("profile"), userController.adminProfileEditController)
 
 // admin add job 
-router.post("/add-job",adminjwtMiddleware,jobController.addJobController)
+router.post("/add-job", adminjwtMiddleware, jobController.addJobController)
 
 // admin delete job 
-router.delete("/job/:id/remove",adminjwtMiddleware,jobController.removeJobController)
+router.delete("/job/:id/remove", adminjwtMiddleware, jobController.removeJobController)
 
+// get application 
+router.get("/all-application", adminjwtMiddleware, applicationController.getApplicationController)
 
 
 module.exports = router
