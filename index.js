@@ -13,6 +13,7 @@ bookstoreServer.use(cors())
 bookstoreServer.use(express.json()) // enable json parsing
 bookstoreServer.use(router) //enable router
 bookstoreServer.use("/uploads",express.static("./uploads"))
+bookstoreServer.use("/pdf",express.static("./pdf"))
 
 // create port for our application
 const PORT = 3000
