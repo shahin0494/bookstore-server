@@ -1,4 +1,5 @@
 const books = require("../models/bookModel")
+const stripe = require("stripe")("sk_test_51SPbdm2M3fJPEa74ewqGHRPszGSUPF52DF6Sw846koIkhhpobpqhfs7MhApssC6a3iUAEyeFqfJ3x3RKxUWHYeYn00xoMho1EW")
 
 // add book
 exports.addBookController = async (req, res) => {
@@ -106,27 +107,56 @@ exports.deleteUserBookController = async (req, res) => {
 }
 
 // admin all books
-exports.getAllBookAdminController = async (req,res)=>{
- console.log("inside getAllBookAdminController");
- try {
-   const allAdminBooks = await books.find()
-   res.status(200).json(allAdminBooks)
- } catch (error) {
-   res.status(500).json(error)
- }
- 
+exports.getAllBookAdminController = async (req, res) => {
+    console.log("inside getAllBookAdminController");
+    try {
+        const allAdminBooks = await books.find()
+        res.status(200).json(allAdminBooks)
+    } catch (error) {
+        res.status(500).json(error)
+    }
+
 }
 
 // update status to approve books by admin
-exports.updateBookStatusController = async (req,res)=>{
+exports.updateBookStatusController = async (req, res) => {
     console.log("inside updateBookStatusController");
-    const {_id, title, author, noOfPages, imageUrl, price, discountPrice, abstract, publisher, language, isbn, category, uploadImg, userMail, bought} = req.body
+    const { _id, title, author, noOfPages, imageUrl, price, discountPrice, abstract, publisher, language, isbn, category, uploadImg, userMail, bought } = req.body
     try {
-        const updateBook = await books.findByIdAndUpdate({_id},{title,author,noOfPages,imageUrl,price,discountPrice,abstract,publisher,language,isbn,category,uploadImg,status:"approved",userMail,bought},{new:true})
+        const updateBook = await books.findByIdAndUpdate({ _id }, { title, author, noOfPages, imageUrl, price, discountPrice, abstract, publisher, language, isbn, category, uploadImg, status: "approved", userMail, bought }, { new: true })
         await updateBook.save()
         res.status(200).json(updateBook)
     } catch (err) {
         res.status(500).json(err)
     }
-    
+
+}
+
+// make payment
+exports.makeBookPaymentController = async (req, res) => {
+    console.log("inside makeBookPaymentController");
+    const { _id, title, author, noOfPages, imageUrl, price, discountPrice, abstract, publisher, language, isbn, uploadImg, category, userMail } = req.body
+    const email = req.payload
+    try {
+        const updateBookDetails = await books.findByIdAndUpdate({ _id }, {
+            title, author, noOfPages, imageUrl, price, discountPrice, abstract, publisher, language, isbn, category, uploadImg, status: "sold", userMail, bought: email
+        }, { new: true })
+        console.log(updateBookDetails);
+        // stripe checkout session
+        const line_items = [{
+            price_data: {
+                currency: "usd",
+                product_data: {
+                    name: title,
+                    description: `${author} | ${publisher}`,
+                    images: uploadImg,
+                    metadata: { title, author, noOfPages, imageUrl, price, discountPrice, abstract, publisher, language, isbn, category, status: "sold", userMail, bought: email }
+                },
+                unit_amount: Math.round(discountPrice * 100)
+            },
+            quantity: 1
+        }]
+    } catch (err) {
+        res.status(500).json(err)
+    }
 }
