@@ -9,7 +9,7 @@ const pdfMulterConfig = require('../middlewares/pdfMulterMiddleware')
 const applicationController = require("../controllers/applicationController")
 const router = express.Router()
 
-// unauthorised USER
+// ------------------unauthorised USER------------------------
 
 // register
 router.post('/register', userController.registerController)
@@ -23,7 +23,7 @@ router.post('/google-login', userController.googleLoginController)
 // home-book
 router.get("/home-books", bookController.getHomeBooks)
 
-// authorised USER
+// -------------------authorised USER-------------------------
 
 // add book
 router.post("/add-book", multerConfig.array("uploadImg", 3), jwtMiddleware, bookController.addBookController)
@@ -51,6 +51,9 @@ router.get("/all-job", jobController.getAllJobsController)
 
 // add application / apply job
 router.post("/application/add", jwtMiddleware, pdfMulterConfig.single("resume"), applicationController.addApplicationController)
+
+// make payment
+router.post("/make-payment",jwtMiddleware,bookController.makeBookPaymentController)
 
 // ---------- admin----------
 
